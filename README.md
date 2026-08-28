@@ -12,8 +12,8 @@ We need to design the courier integration system. In our system, we can onboard 
 - **Environment**: Node.js
 - **Frameworks**: Express
 - **ORMs**: Prisma
-- **Databases**: MySQL
-- **Other Tools**: Docker, Redis
+- **Databases**: MySQL(Shipment details) and MongoDB(to track the req and resp of Courier)
+- **Other Tools**: Docker
 
 ---
 
