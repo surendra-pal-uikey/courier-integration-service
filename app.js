@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 
-import shipmentRoutes from "./src/features/shipments/shipment.routes.js";
+import shipmentRoutes from "./src/routes/shipment.routes.js";
 import { errorHandler } from "./src/middlewares/error.middleware.js";
 
 const app = express();

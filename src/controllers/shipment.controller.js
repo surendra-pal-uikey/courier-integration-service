@@ -3,8 +3,8 @@ import {
   CreateShipmentRequestDTO,
   TrackRequestDTO,
   CancelRequestDTO,
-} from "./dtos/consignment-dto.js";
-import shipmentService from "./shipment.service.js";
+} from "../dtos/consignment-dto.js";
+import shipmentService from "../services/shipment.service.js";
 
 export async function createShipmentController(req, res, next) {
   try {

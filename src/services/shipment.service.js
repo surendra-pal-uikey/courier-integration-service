@@ -1,4 +1,4 @@
-import providerFactory from "./provider.factory.js";
+import providerFactory from "../config/provider.factory.js";
 
 class ShipmentService {
   constructor() {}
