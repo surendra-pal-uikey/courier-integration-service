@@ -1,4 +1,4 @@
-import { TrackingEvent } from "./tracking.model";
+import { TrackingEvent } from "../models/tracking.model";
 
 async function logActivity(orderId, requestPayload, responsePayload) {
   const logEvent = await TrackingEvent.create({

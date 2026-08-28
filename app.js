@@ -6,6 +6,9 @@ import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 
+import { sequelize } from "./src/config/database/mysql.js";
+import { connectMongoDB } from "./src/config/database/mongodb.js";
+
 import shipmentRoutes from "./src/routes/shipment.routes.js";
 import { errorHandler } from "./src/middlewares/error.middleware.js";
 
@@ -24,14 +27,31 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/v1/orders", shipmentRoutes);
 
-// catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
 });
 
-// error handler
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server is running at port: ${PORT}`);
-});
+async function startServer() {
+  try {
+    await sequelize.authenticate();
+    await connectMongoDB();
+    console.log("MySQL Database connected via Sequelize.");
+    console.log("MongoDb Database connected via mongoose.");
+
+    if (process.env.NODE_ENV === "development") {
+      await sequelize.sync({ alter: true });
+      console.log("Models synchronized with MySQL schema.");
+    }
+
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("Unable to connect to MySQL or MongoDB database:", error);
+    process.exit(1);
+  }
+}
+
+startServer();

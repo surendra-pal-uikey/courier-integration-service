@@ -1,0 +1,91 @@
+version: "3.8"
+
+services:
+  # --- Node.js Express API ---
+  api:
+    build:
+      context: .
+    container_name: express_api_dev
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    volumes:
+      - .:/usr/src/app # Mounts local code for hot-reloading
+      - /usr/src/app/node_modules # Preserves container node_modules
+    environment:
+      NODE_ENV: development
+      PORT: ${PORT:-3000}
+      MYSQL_HOST: mysql_db
+      MYSQL_PORT: 3306
+      MYSQL_USER: ${MYSQL_USER:-root}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-courier_db}
+      MONGO_URI: mongodb://${MONGO_USER:-admin}:${MONGO_PASSWORD:-adminpassword}@mongo_db:27017/${MONGO_DATABASE:-courier_logs}
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+      mongo_db:
+        condition: service_healthy
+    networks:
+      - backend_network
+
+  # --- MySQL Database ---
+  mysql_db:
+    image: mysql:8.0
+    container_name: mysql_db_dev
+    restart: unless-stopped
+    ports:
+      - "3306:3306" # Exposes MySQL locally for GUI client access
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-courier_db}
+      MYSQL_USER: ${MYSQL_USER:-devuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-devpassword}
+    volumes:
+      - mysql_dev_data:/var/lib/mysql
+    networks:
+      - backend_network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p${MYSQL_ROOT_PASSWORD:-rootpassword}",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # --- MongoDB Database ---
+  mongo_db:
+    image: mongo:7.0
+    container_name: mongo_db_dev
+    restart: unless-stopped
+    ports:
+      - "27017:27017" # Exposes MongoDB locally for Compass access
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-adminpassword}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-courier_logs}
+    volumes:
+      - mongo_dev_data:/data/db
+    networks:
+      - backend_network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+networks:
+  backend_network:
+    driver: bridge
+
+volumes:
+  mysql_dev_data:
+  mongo_dev_data:

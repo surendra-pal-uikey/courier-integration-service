@@ -16,6 +16,8 @@
     "jade": "~1.11.0",
     "mongoose": "^9.9.4",
     "morgan": "~1.9.1",
+    "mysql2": "^3.24.2",
+    "sequelize": "^6.37.8",
     "zod": "^4.4.3"
   },
   "devDependencies": {
