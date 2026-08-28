@@ -1,4 +1,64 @@
-# courier-integration-service
+# Backend Assignment(courier-integration-service)
+
+Problem Statement:
+We need to design the courier integration system. In our system, we can onboard a few couriers like UrbaneBolt, Shiprocket, and Delhivery.
+
+## Stack Used:
+
+Language: JS
+Environment: Node
+Frameworks: Express
+ORMs: Prisma
+Databases: MySQL
+Other Tools: Docker, Redis.
+
+## API endpoints
+
+### Request to create the shipment for the order
+
+```bash
+curl --location 'http://localhost:3000/api/v1/orders/' \
+--header 'Content-Type: application/json' \
+--data '{
+    "courier_partner": "URBANE_BOLT",
+    "order_id": "UATTESTUEBCUS0018",
+    "customer_code": "UEBCUS0008"
+}'
+```
+
+### Request to track the shipment for the order
+
+```bash
+curl --location --request GET 'http://localhost:3000/api/v1/orders/123/track' \
+--header 'Content-Type: application/json' \
+--data '{
+    "courier_partner": "URBANE_BOLT"
+}'
+```
+
+### Request to cancel the shipment for the order
+
+```bash
+curl --location 'http://localhost:3000/api/v1/orders/123/cancel' \
+--header 'Content-Type: application/json' \
+--data '{
+    "courier_partner": "URBANE_BOLT"
+}'
+```
+
+### Request to place the bulk shipments for the orders
+
+```bash
+curl --location 'http://localhost:3000/api/v1/orders/bulk' \
+--header 'Content-Type: application/json' \
+--data '[
+    {
+        "courier_partner": "URBANE_BOLT",
+        "order_id": "UATTESTUEBCUS0018",
+        "customer_code": "UEBCUS0008"
+    }
+]'
+```
 
 Create shipment request
 
