@@ -1,20 +1,69 @@
-# Backend Assignment(courier-integration-service)
+# Backend Assignment (courier-integration-service)
 
-Problem Statement:
+## Problem Statement:
+
 We need to design the courier integration system. In our system, we can onboard a few couriers like UrbaneBolt, Shiprocket, and Delhivery.
+
+---
 
 ## Stack Used:
 
-Language: JS
-Environment: Node
-Frameworks: Express
-ORMs: Prisma
-Databases: MySQL
-Other Tools: Docker, Redis.
+- **Language**: JavaScript
+- **Environment**: Node.js
+- **Frameworks**: Express
+- **ORMs**: Prisma
+- **Databases**: MySQL
+- **Other Tools**: Docker, Redis
 
-## API endpoints
+---
 
-### Request to create the shipment for the order
+## Steps to Set Up the Project
+
+Follow these steps to set up and run the project locally:
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+```
+
+### 2. Navigate to the Project Directory
+
+```bash
+cd courier-integration-service
+```
+
+### 3. Install Dependencies
+
+Make sure you have `Node.js`(22.0.0) installed. Then, run:
+
+```bash
+npm install
+```
+
+### 4. Set Up the Environment Variables
+
+Create a `.env` file in the root directory and configure the required environment variables. For example:
+
+```env
+PORT=3000
+```
+
+### 5. Start the Application
+
+Run the application using:
+
+```bash
+npm run start
+```
+
+The application will start on `http://localhost:3000`.
+
+---
+
+## API Endpoints
+
+### Request to Create the Shipment for the Order
 
 ```bash
 curl --location 'http://localhost:3000/api/v1/orders/' \
@@ -26,7 +75,7 @@ curl --location 'http://localhost:3000/api/v1/orders/' \
 }'
 ```
 
-### Request to track the shipment for the order
+### Request to Track the Shipment for the Order
 
 ```bash
 curl --location --request GET 'http://localhost:3000/api/v1/orders/123/track' \
@@ -36,7 +85,7 @@ curl --location --request GET 'http://localhost:3000/api/v1/orders/123/track' \
 }'
 ```
 
-### Request to cancel the shipment for the order
+### Request to Cancel the Shipment for the Order
 
 ```bash
 curl --location 'http://localhost:3000/api/v1/orders/123/cancel' \
@@ -46,7 +95,7 @@ curl --location 'http://localhost:3000/api/v1/orders/123/cancel' \
 }'
 ```
 
-### Request to place the bulk shipments for the orders
+### Request to Place Bulk Shipments for the Orders
 
 ```bash
 curl --location 'http://localhost:3000/api/v1/orders/bulk' \
@@ -60,7 +109,9 @@ curl --location 'http://localhost:3000/api/v1/orders/bulk' \
 ]'
 ```
 
-Create shipment request
+---
+
+## Example Create Shipment Request
 
 ```json
 [
