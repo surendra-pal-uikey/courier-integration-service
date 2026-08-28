@@ -1,16 +1,24 @@
+import {
+  BulkShipmentRequestDTO,
+  CreateShipmentRequestDTO,
+  TrackRequestDTO,
+  CancelRequestDTO,
+} from "./dtos/consignment-dto.js";
 import shipmentService from "./shipment.service.js";
 
 export async function createShipmentController(req, res, next) {
   try {
-    const { shipmentData, preferredCarrierCode } = req.body;
+    const validatedData = CreateShipmentRequestDTO.parse(req.body);
+    const { courier_partner, order_id, customer_code } = validatedData;
     const result = await shipmentService.createShipment(
-      shipmentData,
-      preferredCarrierCode
+      courier_partner,
+      order_id,
+      customer_code
     );
     return res.status(201).json({
       success: true,
-      provider: preferredCarrierCode,
-      data: result,
+      provider: courier_partner,
+      data: "result",
     });
   } catch (error) {
     next(error);
@@ -19,15 +27,15 @@ export async function createShipmentController(req, res, next) {
 
 export async function trackShipmentController(req, res, next) {
   try {
-    const awbNumber = req.params.id;
-    const { preferredCarrierCode } = req.body;
+    const orderId = req.params.order_id;
+    const validatedData = TrackRequestDTO.parse(req.body);
     const result = await shipmentService.trackShipment(
-      awbNumber,
-      preferredCarrierCode
+      orderId,
+      validatedData.courier_partner
     );
     return res.status(201).json({
       success: true,
-      provider: preferredCarrierCode,
+      provider: validatedData.courier_partner,
       data: result,
     });
   } catch (error) {
@@ -37,15 +45,16 @@ export async function trackShipmentController(req, res, next) {
 
 export async function cancelShipmentController(req, res, next) {
   try {
-    const { cancelShipmentData, preferredCarrierCode } = req.body;
+    const orderId = req.params.order_id;
+    const validatedData = CancelRequestDTO.parse(req.body);
     const result = await shipmentService.cancelShipment(
-      cancelShipmentData,
-      preferredCarrierCode
+      orderId,
+      validatedData.courier_partner
     );
 
     return res.status(201).json({
       success: true,
-      provider: preferredCarrierCode,
+      provider: validatedData.courier_partner,
       data: result,
     });
   } catch (error) {
@@ -55,15 +64,12 @@ export async function cancelShipmentController(req, res, next) {
 
 export async function bulkShipmentController(req, res, next) {
   try {
-    const { bulkShipmentData, preferredCarrierCode } = req.body;
+    const validatedBulkReq = BulkShipmentRequestDTO.parse(req.body);
 
-    const result = await shipmentService.bulkShipment(
-      bulkShipmentData,
-      preferredCarrierCode
-    );
+    const result = await shipmentService.bulkShipment(validatedBulkReq);
+
     return res.status(201).json({
       success: true,
-      provider: preferredCarrierCode,
       data: result,
     });
   } catch (error) {

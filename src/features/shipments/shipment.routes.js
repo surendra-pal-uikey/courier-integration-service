@@ -9,8 +9,8 @@ import {
 const router = Router();
 
 router.post("", createShipmentController);
-router.get("/:id/track", trackShipmentController);
-router.post("/:id/cancel", cancelShipmentController);
+router.get("/:order_id/track", trackShipmentController);
+router.post("/:order_id/cancel", cancelShipmentController);
 router.post("/bulk", bulkShipmentController);
 
 export default router;
