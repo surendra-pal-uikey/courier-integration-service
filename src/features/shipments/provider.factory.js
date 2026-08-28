@@ -1,4 +1,4 @@
-import urbaneBoltProvider from "./providers/urbane-bolt.provider";
+import urbaneBoltProvider from "./providers/urbane-bolt.provider.js";
 
 class ProviderFactory {
   constructor() {

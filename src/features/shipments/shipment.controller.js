@@ -1,9 +1,30 @@
-import shipmentService from "./shipment.service";
+import shipmentService from "./shipment.service.js";
 
-async function createShipmentController(req, res, next) {
+export async function createShipmentController(req, res, next) {
   try {
+    const { shipmentData, preferredCarrierCode } = req.body;
+    const result = await shipmentService.createShipment(
+      shipmentData,
+      preferredCarrierCode
+    );
+    return res.status(201).json({
+      success: true,
+      provider: preferredCarrierCode,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function trackShipmentController(req, res, next) {
+  try {
+    const awbNumber = req.params.id;
     const { preferredCarrierCode } = req.body;
-    const result = await shipmentService.createShipment(req.body);
+    const result = await shipmentService.trackShipment(
+      awbNumber,
+      preferredCarrierCode
+    );
     return res.status(201).json({
       success: true,
       provider: preferredCarrierCode,
@@ -14,10 +35,14 @@ async function createShipmentController(req, res, next) {
   }
 }
 
-async function trackShipmentController(req, res, next) {
+export async function cancelShipmentController(req, res, next) {
   try {
-    const { preferredCarrierCode } = req.body;
-    const result = await shipmentService.trackShipment(req.body);
+    const { cancelShipmentData, preferredCarrierCode } = req.body;
+    const result = await shipmentService.cancelShipment(
+      cancelShipmentData,
+      preferredCarrierCode
+    );
+
     return res.status(201).json({
       success: true,
       provider: preferredCarrierCode,
@@ -28,10 +53,14 @@ async function trackShipmentController(req, res, next) {
   }
 }
 
-async function cancelShipmentController(req, res, next) {
+export async function bulkShipmentController(req, res, next) {
   try {
-    const result = await shipmentService.cancelShipment(req.body);
+    const { bulkShipmentData, preferredCarrierCode } = req.body;
 
+    const result = await shipmentService.bulkShipment(
+      bulkShipmentData,
+      preferredCarrierCode
+    );
     return res.status(201).json({
       success: true,
       provider: preferredCarrierCode,
@@ -41,24 +70,3 @@ async function cancelShipmentController(req, res, next) {
     next(error);
   }
 }
-
-async function bulkShipmentController(req, res, next) {
-  try {
-    const { preferredCarrierCode } = req.body;
-    const result = await shipmentService.bulkShipment(req.body);
-    return res.status(201).json({
-      success: true,
-      provider: preferredCarrierCode,
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-}
-
-export default {
-  createShipmentController,
-  trackShipmentController,
-  cancelShipmentController,
-  bulkShipmentController,
-};

@@ -1,10 +1,9 @@
-import providerFactory from "./provider.factory";
+import providerFactory from "./provider.factory.js";
 
 class ShipmentService {
   constructor() {}
 
-  async createShipment(shipmentData) {
-    const { preferredCarrierCode } = req.body;
+  async createShipment(shipmentData, preferredCarrierCode) {
     const provider = providerFactory.getProvider(preferredCarrierCode);
     const result = await provider.createShipment(shipmentData);
 
@@ -15,8 +14,7 @@ class ShipmentService {
     };
   }
 
-  async trackShipment(awbNumber) {
-    const { preferredCarrierCode } = req.body;
+  async trackShipment(awbNumber, preferredCarrierCode) {
     const provider = providerFactory.getProvider(preferredCarrierCode);
     const result = await provider.trackShipment(awbNumber);
 
@@ -28,16 +26,14 @@ class ShipmentService {
     };
   }
 
-  async cancelShipment(cancelShipmentData) {
-    const { preferredCarrierCode } = req.body;
+  async cancelShipment(cancelShipmentData, preferredCarrierCode) {
     const provider = providerFactory.getProvider(preferredCarrierCode);
     const result = await provider.cancelShipment(cancelShipmentData);
 
     return { success: true, message: "Shipment cancelled", result };
   }
 
-  async bulkShipment(bulkShipmentData) {
-    const { preferredCarrierCode } = req.body;
+  async bulkShipment(bulkShipmentData, preferredCarrierCode) {
     const provider = providerFactory.getProvider(preferredCarrierCode);
     const result = await provider.bulkShipment(bulkShipmentData);
 

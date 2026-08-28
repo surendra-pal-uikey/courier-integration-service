@@ -4,7 +4,7 @@ import {
   trackShipmentController,
   cancelShipmentController,
   bulkShipmentController,
-} from "./shipment.service";
+} from "./shipment.controller.js";
 
 const router = Router();
 

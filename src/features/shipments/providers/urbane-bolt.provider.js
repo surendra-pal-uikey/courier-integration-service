@@ -1,5 +1,5 @@
 // src/providers/delhivery.provider.js
-import BaseProvider from "./base.provider";
+import BaseProvider from "./base.provider.js";
 
 class UrbanBoltProvider extends BaseProvider {
   constructor() {
