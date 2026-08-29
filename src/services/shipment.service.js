@@ -1,3 +1,4 @@
+import pLimit from "p-limit";
 import providerFactory from "../config/provider.factory.js";
 import { ShipmentNotFoundException } from "../errors/shipment-not-found.error.js";
 import { Shipment } from "../models/shipment.model.js";
@@ -22,25 +23,36 @@ class ShipmentService {
     const productDetails = getProductDetails();
     const orderDetails = getOrderDetails();
 
-    const result = await provider.createShipment({
-      originAddress,
-      destinationAddress,
-      returnAddress,
-      invoiceDetails,
-      productDetails,
-      orderDetails: {
-        ...orderDetails,
-        orderId: orderId,
-        customerCode: customerCode,
-      },
-    });
+    try {
+      const result = await provider.createShipment({
+        originAddress,
+        destinationAddress,
+        returnAddress,
+        invoiceDetails,
+        productDetails,
+        orderDetails: {
+          ...orderDetails,
+          orderId: orderId,
+          customerCode: customerCode,
+        },
+      });
+      return result;
+    } catch (error) {
+      const errorDetails = {
+        orderId,
+        courierPartner,
+        requestId: error.response?.headers["x-request-id"] || "N/A",
+        errorType: error.name || "UnknownError",
+        stackTrace: error.stack || "No stack trace available",
+      };
 
-    console.log("Shipment created successfully:", result);
-    return {
-      awb: "DELHI-99887766",
-      labelUrl: "https://delhivery.com/labels/DELHI-99887766.pdf",
-      result,
-    };
+      console.error("Error creating shipment:", errorDetails, error.message);
+
+      throw {
+        message: "Failed to create shipment",
+        ...errorDetails,
+      };
+    }
   }
 
   async trackShipment(orderId, courierPartner) {
@@ -58,14 +70,25 @@ class ShipmentService {
 
     const awbNumber = await shipment.awbNumber;
 
-    const result = await provider.trackShipment(awbNumber);
+    try {
+      const result = await provider.trackShipment(awbNumber);
+      return result;
+    } catch (error) {
+      const errorDetails = {
+        orderId,
+        courierPartner,
+        requestId: error.response?.headers["x-request-id"] || "N/A",
+        errorType: error.name || "UnknownError",
+        stackTrace: error.stack || "No stack trace available",
+      };
 
-    return {
-      status: "IN_TRANSIT",
-      location: "Mumbai Gateway Hub",
-      timestamp: new Date().toISOString(),
-      result,
-    };
+      console.error("Error tracking shipment:", errorDetails, error.message);
+
+      throw {
+        message: "Failed to track shipment",
+        ...errorDetails,
+      };
+    }
   }
 
   async cancelShipment(orderId, courierPartner) {
@@ -83,16 +106,84 @@ class ShipmentService {
 
     const awbNumber = await shipment.awbNumber;
 
-    const result = await provider.cancelShipment(awbNumber);
+    try {
+      const result = await provider.cancelShipment(awbNumber);
+      return result;
+    } catch (error) {
+      const errorDetails = {
+        orderId,
+        courierPartner,
+        requestId: error.response?.headers["x-request-id"] || "N/A",
+        errorType: error.name || "UnknownError",
+        stackTrace: error.stack || "No stack trace available",
+      };
 
-    return { success: true, message: "Shipment cancelled", result };
+      console.error("Error cancelling shipment:", errorDetails, error.message);
+
+      throw {
+        message: "Failed to cancel shipment",
+        ...errorDetails,
+      };
+    }
   }
 
   async bulkShipment(bulkShipmentData) {
     const provider = providerFactory.getProvider(preferredCarrierCode);
-    const result = await provider.bulkShipment(bulkShipmentData);
+    // to execute the shipment creation in parallel with a limit of 10 concurrent requests
+    const limit = pLimit(10);
 
-    return { success: true, message: "Bulk shipment processed" };
+    try {
+      const promises = bulkShipmentData.map((shipmentData) =>
+        limit(async () => {
+          try {
+            const originAddress = getOriginAddress();
+            const destinationAddress = getDestinationAddress();
+            const returnAddress = getReturnAddress();
+            const invoiceDetails = getInvoiceDetails();
+            const productDetails = getProductDetails();
+            const orderDetails = getOrderDetails();
+
+            const result = await provider.createShipment({
+              originAddress,
+              destinationAddress,
+              returnAddress,
+              invoiceDetails,
+              productDetails,
+              orderDetails: {
+                ...orderDetails,
+                orderId: shipmentData.order_id,
+                customerCode: shipmentData.customer_code,
+              },
+            });
+            return {
+              status: "fulfilled",
+              id: shipmentData.order_id,
+              result,
+            };
+          } catch (error) {
+            return {
+              status: "rejected",
+              id: shipmentData.order_id,
+              error: error.message,
+            };
+          }
+        })
+      );
+      const results = await Promise.all(promises);
+
+      const successes = results.filter((r) => r.status === "fulfilled");
+      const failures = results.filter((r) => r.status === "rejected");
+
+      return {
+        total: bulkShipmentData.length,
+        successCount: successes.length,
+        failureCount: failures.length,
+        details: results,
+      };
+    } catch (error) {
+      console.error("Error processing bulk shipment:", error);
+      throw error;
+    }
   }
 }
 

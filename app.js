@@ -1,6 +1,7 @@
 import createError from "http-errors";
 import "dotenv/config";
 import express from "express";
+import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
@@ -30,6 +31,12 @@ app.use("/api/v1/orders", shipmentRoutes);
 
 app.use(function (req, res, next) {
   next(createError(404));
+});
+
+// middleware to generate a unique request ID for each incoming request
+app.use((req, res, next) => {
+  req.requestId = req.headers["x-request-id"] || uuidv4();
+  next();
 });
 
 app.use(errorHandler);

@@ -1,4 +1,4 @@
-// src/providers/delhivery.provider.js
+import CourierPartnerAPIError from "../../errors/courier-partner-api.error.js";
 import { CreateShipmentRequest } from "../../dtos/consignment-dto.js";
 import {
   createManifest,
@@ -76,31 +76,46 @@ class UrbanBoltProvider extends BaseProvider {
 
     const validatedReq = CreateShipmentRequest.parse(req);
     console.log("validated req", validatedReq);
-    return {
-      awb: "DELHI-99887766",
-      labelUrl: "https://delhivery.com/labels/DELHI-99887766.pdf",
-    };
+
+    try {
+      const resp = await createManifest(validatedReq);
+      return resp;
+    } catch (error) {
+      throw new CourierPartnerAPIError(
+        "URBANE_BOLT",
+        "/services/manifest/",
+        error.response?.status || 500,
+        error.response?.data || error.message
+      );
+    }
   }
 
   async trackShipment(awbNumber) {
-    const resp = await trackShipment(awbNumber);
-
-    return {
-      status: "IN_TRANSIT",
-      location: "Mumbai Gateway Hub",
-      resp,
-      timestamp: new Date().toISOString(),
-    };
+    try {
+      const resp = await trackShipment(awbNumber);
+      return resp;
+    } catch (error) {
+      throw new CourierPartnerAPIError(
+        "URBANE_BOLT",
+        `/services/tracking-pub/?awb=${awbNumber}`,
+        error.response?.status || 500,
+        error.response?.data || error.message
+      );
+    }
   }
 
   async cancelShipment(awbNumber) {
-    const resp = await cancelShipment({ awbs: awbNumber });
-    return { success: true, message: "Shipment cancelled", resp };
-  }
-
-  async bulkShipment(bulkShipmentData) {
-    console.log("bulk shipment data", bulkShipmentData);
-    return { success: true, message: "Shipment bulk" };
+    try {
+      const resp = await cancelShipment({ awbs: awbNumber });
+      return resp;
+    } catch (error) {
+      throw new CourierPartnerAPIError(
+        "URBANE_BOLT",
+        "/services/cancel/",
+        error.response?.status || 500,
+        error.response?.data || error.message
+      );
+    }
   }
 }
 

@@ -25,10 +25,4 @@ export default class BaseProvider {
       `Method 'cancelShipment()' must be implemented by class ${this.constructor.name}.`
     );
   }
-
-  async bulkShipment(bulkShipmentData) {
-    throw new Error(
-      `Method 'bulkShipment()' must be implemented by class ${this.constructor.name}.`
-    );
-  }
 }
