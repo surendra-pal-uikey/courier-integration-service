@@ -113,11 +113,14 @@ curl --location 'http://localhost:3000/api/v1/orders/bulk' \
 
 Challenges:
 
-1. In order to call urbanebolt api we need to have the access token inside the request header so to avoid keep fetching the access token from the urbanbolt api we are implementing the redis so that we can store the access token inside it and we can make use of the token while making request for that we will keep all the logic inside the request interceptor.
+1. To call urbanebolt api, we need to have the access token in the request header. To avoid repeatedly fetching the access token from the urbanbolt api, we are implementing Redis so that we can store the access token inside it and we can make use of the token while making requests; for that, we will keep all the logic inside the request interceptor.
 
-Worklfow:
+2. Bulk processing request: we have used the p-limit package to process the 10 requests in parallel.
+3. Race condition for authentication in case of bulk requests: we will make use of the async-mutex lib.
 
-We are taking only neccessary data for the implementation like order id, courier_partner, customer_code
+Workflow:
+
+We are taking only the necessary data for the implementation, like order id, courier_partner, customer_code
 
 but most of the details we are generating dummy although we can expect in the request payload from the client but to keep things simple we need only these details for now and can generate all the info required for the urbolt api on the fly. like return details, seller details, customer details, and product details.
 
