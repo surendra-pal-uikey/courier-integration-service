@@ -19,7 +19,6 @@ export async function createShipmentController(req, res, next) {
 
     return res.status(201).json({
       success: true,
-      provider: courier_partner,
       data: result,
     });
   } catch (error) {
@@ -37,7 +36,6 @@ export async function trackShipmentController(req, res, next) {
     );
     return res.status(201).json({
       success: true,
-      provider: validatedData.courier_partner,
       data: result,
     });
   } catch (error) {
@@ -56,7 +54,6 @@ export async function cancelShipmentController(req, res, next) {
 
     return res.status(201).json({
       success: true,
-      provider: validatedData.courier_partner,
       data: result,
     });
   } catch (error) {

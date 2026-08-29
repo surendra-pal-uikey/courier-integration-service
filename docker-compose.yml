@@ -37,9 +37,8 @@ services:
     ports:
       - "${REDIS_PORT:-6379}:${REDIS_PORT:-6379}"
     environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-devredispassoword}
-    command:
-      ["redis-server", "--requirepass", "${REDIS_PASSWORD:-devredispassoword}"]
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
     volumes:
       - redis_dev_data:/data
     networks:
