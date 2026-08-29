@@ -62,7 +62,7 @@ const OrderDetailsDTO = z.object({
 });
 
 export const CreateShipmentRequestDTO = z.object({
-  courier_partner: CourierPartnerEnum,
+  courier_partner: z.string().nonempty("Courier partner is required"),
   order_id: z.string().nonempty("Order ID is required"),
   customer_code: z.string().nonempty("Customer code is required"),
 });
@@ -70,11 +70,11 @@ export const CreateShipmentRequestDTO = z.object({
 export const BulkShipmentRequestDTO = z.array(CreateShipmentRequestDTO);
 
 export const TrackRequestDTO = z.object({
-  courier_partner: CourierPartnerEnum,
+  courier_partner: z.string().nonempty("Courier partner is required"),
 });
 
 export const CancelRequestDTO = z.object({
-  courier_partner: CourierPartnerEnum,
+  courier_partner: z.string().nonempty("Courier partner is required"),
 });
 
 export const CreateShipmentRequest = z.object({

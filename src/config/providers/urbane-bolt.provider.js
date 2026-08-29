@@ -1,5 +1,10 @@
 // src/providers/delhivery.provider.js
 import { CreateShipmentRequest } from "../../dtos/consignment-dto.js";
+import {
+  createManifest,
+  cancelShipment,
+  trackShipment,
+} from "../../api/index.js";
 import BaseProvider from "./base.provider.js";
 
 class UrbanBoltProvider extends BaseProvider {
@@ -78,19 +83,24 @@ class UrbanBoltProvider extends BaseProvider {
   }
 
   async trackShipment(awbNumber) {
+    const resp = await trackShipment(awbNumber);
+
     return {
       status: "IN_TRANSIT",
       location: "Mumbai Gateway Hub",
+      resp,
       timestamp: new Date().toISOString(),
     };
   }
 
   async cancelShipment(awbNumber) {
-    return { success: true, message: "Shipment cancelled" };
+    const resp = await cancelShipment({ awbs: awbNumber });
+    return { success: true, message: "Shipment cancelled", resp };
   }
 
   async bulkShipment(bulkShipmentData) {
-    return { success: true, message: "Shipment cancelled" };
+    console.log("bulk shipment data", bulkShipmentData);
+    return { success: true, message: "Shipment bulk" };
   }
 }
 

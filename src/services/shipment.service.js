@@ -89,8 +89,8 @@ class ShipmentService {
   }
 
   async bulkShipment(bulkShipmentData) {
-    // const provider = providerFactory.getProvider(preferredCarrierCode);
-    // const result = await provider.bulkShipment(bulkShipmentData);
+    const provider = providerFactory.getProvider(preferredCarrierCode);
+    const result = await provider.bulkShipment(bulkShipmentData);
 
     return { success: true, message: "Bulk shipment processed" };
   }

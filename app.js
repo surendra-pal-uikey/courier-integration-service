@@ -43,7 +43,7 @@ async function startServer() {
     console.log("MongoDb Database connected via mongoose.");
 
     if (process.env.NODE_ENV === "development") {
-      await sequelize.sync({ alter: true });
+      await sequelize.sync();
       console.log("Models synchronized with MySQL schema.");
     }
 

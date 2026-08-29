@@ -1,3 +1,4 @@
+import { NotSupportedCourierException } from "../errors/not-supported-courier.error.js";
 import urbaneBoltProvider from "./providers/urbane-bolt.provider.js";
 
 class ProviderFactory {
@@ -11,9 +12,7 @@ class ProviderFactory {
     const provider = this.providers[providerCode];
 
     if (!provider) {
-      throw new Error(
-        `Unsupported or unconfigured courier provider: '${providerCode}'`
-      );
+      throw new NotSupportedCourierException(providerCode);
     }
 
     return provider;
