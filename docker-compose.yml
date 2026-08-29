@@ -29,6 +29,31 @@ services:
     networks:
       - backend_network
 
+  # Redis Cache
+  redis_db:
+    image: redis:7-alpine
+    container_name: redis_db_dev
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:${REDIS_PORT:-6379}"
+    command: redis-server ${REDIS_PASSWORD:-devredispassoword}
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - backend_network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "redis-cli",
+          "-a",
+          "${REDIS_PASSWORD:-devredispassoword}",
+          "ping",
+        ]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
   # --- MySQL Database ---
   mysql_db:
     image: mysql:8.0
@@ -89,3 +114,4 @@ networks:
 volumes:
   mysql_dev_data:
   mongo_dev_data:
+  redis_dev_data:

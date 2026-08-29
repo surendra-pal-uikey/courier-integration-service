@@ -111,6 +111,12 @@ curl --location 'http://localhost:3000/api/v1/orders/bulk' \
 
 ---
 
+Challenges:
+
+1. In order to call urbanebolt api we need to have the access token inside the request header so to avoid keep fetching the access token from the urbanbolt api we are implementing the redis so that we can store the access token inside it and we can make use of the token while making request for that we will keep all the logic inside the request interceptor.
+
+---
+
 ## Example Create Shipment Request
 
 ```json

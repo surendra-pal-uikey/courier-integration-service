@@ -11,6 +11,7 @@ import { connectMongoDB } from "./src/config/database/mongodb.js";
 
 import shipmentRoutes from "./src/routes/shipment.routes.js";
 import { errorHandler } from "./src/middlewares/error.middleware.js";
+import { initRedis } from "./src/config/redis.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -37,6 +38,7 @@ async function startServer() {
   try {
     await sequelize.authenticate();
     await connectMongoDB();
+    await initRedis();
     console.log("MySQL Database connected via Sequelize.");
     console.log("MongoDb Database connected via mongoose.");
 
