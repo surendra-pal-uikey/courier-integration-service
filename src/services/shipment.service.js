@@ -10,6 +10,7 @@ import {
   getOrderDetails,
   getInvoiceDetails,
 } from "../utils/dummyData.js";
+import { ShipmentStatus } from "../enums/shipments.enum.js";
 class ShipmentService {
   constructor() {}
 
@@ -36,6 +37,16 @@ class ShipmentService {
           customerCode: customerCode,
         },
       });
+
+      // store the shipment details in the database
+      await Shipment.create({
+        orderId: orderId,
+        courierPartnerUsed: courierPartner,
+        courierShipmentId: result.courierShipmentId,
+        awbNumber: result.awbNumber,
+        currentShipmentStatus: result.currentShipmentStatus || "CREATED",
+      });
+
       return result;
     } catch (error) {
       const errorDetails = {
@@ -72,6 +83,9 @@ class ShipmentService {
 
     try {
       const result = await provider.trackShipment(awbNumber);
+      await shipment.update({
+        currentShipmentStatus: result.currentShipmentStatus,
+      });
       return result;
     } catch (error) {
       const errorDetails = {
@@ -108,6 +122,9 @@ class ShipmentService {
 
     try {
       const result = await provider.cancelShipment(awbNumber);
+      await shipment.update({
+        currentShipmentStatus: ShipmentStatus.CANCELLED,
+      });
       return result;
     } catch (error) {
       const errorDetails = {

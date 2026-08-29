@@ -1,6 +1,7 @@
 // src/models/Order.js
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/database/mysql.js";
+import { ShipmentStatus } from "../enums/shipments.enum.js";
 
 export const Shipment = sequelize.define(
   "Shipment",
@@ -31,15 +32,8 @@ export const Shipment = sequelize.define(
       unique: true,
     },
     currentShipmentStatus: {
-      type: DataTypes.ENUM(
-        "CREATED",
-        "PICKED_UP",
-        "IN_TRANSIT",
-        "DELIVERED",
-        "CANCELLED",
-        "FAILED"
-      ),
-      defaultValue: "CREATED",
+      type: DataTypes.ENUM(...Object.values(ShipmentStatus)),
+      defaultValue: ShipmentStatus.CREATED,
     },
   },
   {

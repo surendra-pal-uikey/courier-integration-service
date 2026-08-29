@@ -17,3 +17,12 @@ export const AddressTypeEnum = z.enum(
     }),
   }
 );
+
+export const ShipmentStatus = Object.freeze({
+  CREATED: "Created",
+  PICKED_UP: "Picked up",
+  IN_TRANSIT: "In Transit",
+  DELIVERED: "Delivered",
+  CANCELLED: "Cancelled",
+  FAILED: "Failed",
+});
