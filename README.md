@@ -122,6 +122,7 @@ We are taking only neccessary data for the implementation like order id, courier
 but most of the details we are generating dummy although we can expect in the request payload from the client but to keep things simple we need only these details for now and can generate all the info required for the urbolt api on the fly. like return details, seller details, customer details, and product details.
 
 Architecture Diagram:
+<img width="1775" height="788" alt="Screenshot 2026-08-29 at 11 01 16 PM" src="https://github.com/user-attachments/assets/2651cb3b-8ade-46fd-b834-9e4aa6d7b289" />
 
 ## Example Create Shipment Request
 
