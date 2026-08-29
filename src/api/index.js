@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Mutex } from "async-mutex";
 import { redis } from "../config/redis.js";
 
 const URBANE_BOLT_BASE_URL =
@@ -8,33 +9,40 @@ const urbaneBoltClient = axios.create({
   baseURL: URBANE_BOLT_BASE_URL,
 });
 
+const mutex = new Mutex();
+
 // Outbound Request Interceptor
 urbaneBoltClient.interceptors.request.use(async (config) => {
   let token = await redis.get("tokens:urbane_bolt");
 
-  if (!token) {
-    // Token is missing or expired, fetch a new one
-    const response = await axios.post(
-      `${URBANE_BOLT_BASE_URL}/auth/getToken/`,
-      {
-        username: process.env.URBANE_BOLT_USERNAME,
-        password: process.env.URBANE_PASSWORD,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Cookie:
-            "csrftoken=SuZfjeJQJQNlDaNxRJgaMqylRWlqogsL; csrftoken=jMgIhiCS992MOB2mBgwf7tiF7pdezDG6; sessionid=pn4l30zoiqx9ybj9cjy7licfgko3wpen",
+  const release = await mutex.acquire();
+  try {
+    if (!token) {
+      // Token is missing or expired, fetch a new one
+      const response = await axios.post(
+        `${URBANE_BOLT_BASE_URL}/auth/getToken/`,
+        {
+          username: process.env.URBANE_BOLT_USERNAME,
+          password: process.env.URBANE_PASSWORD,
         },
-      }
-    );
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Cookie:
+              "csrftoken=SuZfjeJQJQNlDaNxRJgaMqylRWlqogsL; csrftoken=jMgIhiCS992MOB2mBgwf7tiF7pdezDG6; sessionid=pn4l30zoiqx9ybj9cjy7licfgko3wpen",
+          },
+        }
+      );
 
-    token = response.data.access_token;
-    const expiresIn = response.data.expires_in;
+      token = response.data.access_token;
+      const expiresIn = response.data.expires_in;
 
-    await redis.set("tokens:urbane_bolt", token, {
-      EX: expiresIn,
-    });
+      await redis.set("tokens:urbane_bolt", token, {
+        EX: expiresIn,
+      });
+    }
+  } finally {
+    release();
   }
 
   config.headers.Authorization = `Bearer ${token}`;
