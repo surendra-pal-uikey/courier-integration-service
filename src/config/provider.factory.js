@@ -8,7 +8,7 @@ class ProviderFactory {
   }
 
   getProvider(providerCode) {
-    const provider = this.providers[providerCode?.toUpperCase()];
+    const provider = this.providers[providerCode];
 
     if (!provider) {
       throw new Error(

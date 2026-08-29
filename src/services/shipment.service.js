@@ -1,11 +1,39 @@
 import providerFactory from "../config/provider.factory.js";
-
+import { ShipmentNotFoundException } from "../errors/shipment-not-found.error.js";
+import { Shipment } from "../models/shipment.model.js";
+import {
+  getOriginAddress,
+  getDestinationAddress,
+  getReturnAddress,
+  getProductDetails,
+  getOrderDetails,
+  getInvoiceDetails,
+} from "../utils/dummyData.js";
 class ShipmentService {
   constructor() {}
 
   async createShipment(courierPartner, orderId, customerCode) {
     const provider = providerFactory.getProvider(courierPartner);
-    const result = await provider.createShipment(orderId);
+
+    const originAddress = getOriginAddress();
+    const destinationAddress = getDestinationAddress();
+    const returnAddress = getReturnAddress();
+    const invoiceDetails = getInvoiceDetails();
+    const productDetails = getProductDetails();
+    const orderDetails = getOrderDetails();
+
+    const result = await provider.createShipment({
+      originAddress,
+      destinationAddress,
+      returnAddress,
+      invoiceDetails,
+      productDetails,
+      orderDetails: {
+        ...orderDetails,
+        orderId: orderId,
+        customerCode: customerCode,
+      },
+    });
 
     console.log("Shipment created successfully:", result);
     return {
@@ -17,7 +45,19 @@ class ShipmentService {
 
   async trackShipment(orderId, courierPartner) {
     const provider = providerFactory.getProvider(courierPartner);
-    const awbNumber = "DELHI-99887766"; // Replace with actual AWB number associated with the order
+
+    const shipment = await Shipment.findOne({
+      where: {
+        orderId: orderId,
+      },
+    });
+
+    if (!shipment) {
+      throw new ShipmentNotFoundException(orderId);
+    }
+
+    const awbNumber = await shipment.awbNumber;
+
     const result = await provider.trackShipment(awbNumber);
 
     return {
@@ -30,10 +70,20 @@ class ShipmentService {
 
   async cancelShipment(orderId, courierPartner) {
     const provider = providerFactory.getProvider(courierPartner);
-    const cancelShipmentData = {
-      awbs: ["DELHI-99887766"], // Replace with actual AWB number associated with the order
-    };
-    const result = await provider.cancelShipment(cancelShipmentData);
+
+    const shipment = await Shipment.findOne({
+      where: {
+        orderId: orderId,
+      },
+    });
+
+    if (!shipment) {
+      throw new ShipmentNotFoundException(orderId);
+    }
+
+    const awbNumber = await shipment.awbNumber;
+
+    const result = await provider.cancelShipment(awbNumber);
 
     return { success: true, message: "Shipment cancelled", result };
   }

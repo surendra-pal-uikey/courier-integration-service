@@ -115,7 +115,11 @@ Challenges:
 
 1. In order to call urbanebolt api we need to have the access token inside the request header so to avoid keep fetching the access token from the urbanbolt api we are implementing the redis so that we can store the access token inside it and we can make use of the token while making request for that we will keep all the logic inside the request interceptor.
 
----
+Worklfow:
+
+We are taking only neccessary data for the implementation like order id, courier_partner, customer_code
+
+but most of the details we are generating dummy although we can expect in the request payload from the client but to keep things simple we need only these details for now and can generate all the info required for the urbolt api on the fly. like return details, seller details, customer details, and product details.
 
 ## Example Create Shipment Request
 

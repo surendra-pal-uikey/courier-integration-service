@@ -10,15 +10,17 @@ export async function createShipmentController(req, res, next) {
   try {
     const validatedData = CreateShipmentRequestDTO.parse(req.body);
     const { courier_partner, order_id, customer_code } = validatedData;
+
     const result = await shipmentService.createShipment(
       courier_partner,
       order_id,
       customer_code
     );
+
     return res.status(201).json({
       success: true,
       provider: courier_partner,
-      data: "result",
+      data: result,
     });
   } catch (error) {
     next(error);
