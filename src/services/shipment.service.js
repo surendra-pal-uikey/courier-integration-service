@@ -57,8 +57,6 @@ class ShipmentService {
         stackTrace: error.stack || "No stack trace available",
       };
 
-      console.error("Error creating shipment:", errorDetails, error.message);
-
       throw {
         message: "Failed to create shipment",
         ...errorDetails,
@@ -96,8 +94,6 @@ class ShipmentService {
         stackTrace: error.stack || "No stack trace available",
       };
 
-      console.error("Error tracking shipment:", errorDetails, error.message);
-
       throw {
         message: "Failed to track shipment",
         ...errorDetails,
@@ -134,8 +130,6 @@ class ShipmentService {
         errorType: error.name || "UnknownError",
         stackTrace: error.stack || "No stack trace available",
       };
-
-      console.error("Error cancelling shipment:", errorDetails, error.message);
 
       throw {
         message: "Failed to cancel shipment",
@@ -198,7 +192,6 @@ class ShipmentService {
         details: results,
       };
     } catch (error) {
-      console.error("Error processing bulk shipment:", error);
       throw error;
     }
   }

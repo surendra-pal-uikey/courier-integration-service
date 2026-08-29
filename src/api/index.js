@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Mutex } from "async-mutex";
-import { redis } from "../config/redis.js";
+import { redisPublisher } from "../config/redis.js";
 
 const URBANE_BOLT_BASE_URL =
   process.env.URBANE_URL || "https://uat.urbanebolt.in/api/v1";
@@ -13,7 +13,9 @@ const mutex = new Mutex();
 
 // Outbound Request Interceptor
 urbaneBoltClient.interceptors.request.use(async (config) => {
-  let token = await redis.get("tokens:urbane_bolt");
+  let token = await redisPublisher.get("tokens:urbane_bolt");
+
+  console.log("initial token", token);
 
   const release = await mutex.acquire();
   try {
@@ -37,7 +39,7 @@ urbaneBoltClient.interceptors.request.use(async (config) => {
       token = response.data.access_token;
       const expiresIn = response.data.expires_in;
 
-      await redis.set("tokens:urbane_bolt", token, {
+      await redisPublisher.set("tokens:urbane_bolt", token, {
         EX: expiresIn,
       });
     }
@@ -45,6 +47,7 @@ urbaneBoltClient.interceptors.request.use(async (config) => {
     release();
   }
 
+  console.log("token", token);
   config.headers.Authorization = `Bearer ${token}`;
   return config;
 });

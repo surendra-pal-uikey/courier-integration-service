@@ -1,4 +1,4 @@
-import CourierPartnerAPIError from "../../errors/courier-partner-api.error.js";
+import { CourierPartnerAPIError } from "../../errors/courier-partner-api.error.js";
 import { CreateShipmentRequest } from "../../dtos/consignment-dto.js";
 import {
   createManifest,
@@ -6,6 +6,7 @@ import {
   trackShipment,
 } from "../../api/index.js";
 import BaseProvider from "./base.provider.js";
+import { logActivity } from "../../services/tracking.service.js";
 
 class UrbanBoltProvider extends BaseProvider {
   constructor() {
@@ -79,6 +80,9 @@ class UrbanBoltProvider extends BaseProvider {
 
     try {
       const resp = await createManifest(validatedReq);
+
+      // logging req and resp object inside the mongodb
+      await logActivity(validatedReq.orderNumber, validatedReq, resp);
       return resp;
     } catch (error) {
       throw new CourierPartnerAPIError(

@@ -1,6 +1,6 @@
 import { TrackingEvent } from "../models/tracking.model";
 
-async function logActivity(orderId, requestPayload, responsePayload) {
+export async function logActivity(orderId, requestPayload, responsePayload) {
   const logEvent = await TrackingEvent.create({
     order_id: orderId,
     reqObj: requestPayload,
