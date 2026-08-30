@@ -12,6 +12,7 @@ import {
 } from "../utils/dummyData.js";
 import { ShipmentStatus } from "../enums/shipments.enum.js";
 import { logOrderStatus } from "./shipment-status-log.service.js";
+import { isUniqueShipmentOrder } from "../utils/idempotency.js";
 class ShipmentService {
   constructor() {}
 
@@ -159,6 +160,15 @@ class ShipmentService {
             const invoiceDetails = getInvoiceDetails();
             const productDetails = getProductDetails();
             const orderDetails = getOrderDetails();
+
+            const isUnique = await isUniqueShipmentOrder(shipmentData.order_id);
+
+            if (!isUnique) {
+              console.warn(
+                `[Duplicated] skipping duplicate orderId: ${shipmentData.order_id}`
+              );
+              return;
+            }
 
             const result = await provider.createShipment({
               originAddress,
