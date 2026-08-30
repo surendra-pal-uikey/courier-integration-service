@@ -13,7 +13,10 @@ import {
 import { ShipmentStatus } from "../enums/shipments.enum.js";
 import { logOrderStatus } from "./shipment-status-log.service.js";
 import { isUniqueShipmentOrder } from "../utils/idempotency.js";
-import { TrackShipmentResponseDTO } from "../dtos/consignment-dto.js";
+import {
+  CreateShipmentResponseDTO,
+  TrackShipmentResponseDTO,
+} from "../dtos/consignment-dto.js";
 class ShipmentService {
   constructor() {}
 
@@ -50,7 +53,16 @@ class ShipmentService {
         currentShipmentStatus: result.currentShipmentStatus || "CREATED",
       });
 
-      return result;
+      const response = CreateShipmentResponseDTO.parse({
+        orderId: shipment.orderId,
+        courierPartnerUsed: shipment.courierPartnerUsed,
+        courierShipmentId: result.courierShipmentId,
+        awbNumber: result.awbNumber,
+        status: shipment.currentShipmentStatus || "CREATED",
+        createdAt: shipment.createdAt,
+      });
+
+      return response;
     } catch (error) {
       const errorDetails = {
         orderId,

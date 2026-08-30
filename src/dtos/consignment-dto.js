@@ -129,3 +129,12 @@ export const TrackShipmentResponseDTO = z.object({
   status: z.string(),
   updateAt: z.string(),
 });
+
+export const CreateShipmentResponseDTO = z.object({
+  orderId: z.string(),
+  courierPartnerUsed: z.number(),
+  courierShipmentId: z.string(),
+  awbNumber: z.string(),
+  status: z.string(),
+  createdAt: z.string(),
+});
