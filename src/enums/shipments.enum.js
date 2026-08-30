@@ -1,7 +1,9 @@
 import { z } from "zod";
 
-export const CourierPartnerEnum = z.enum(["URBANE_BOLT"], {
-  errorMap: () => ({ message: "Courier Partner must be 'URBANE_BOLT'" }),
+export const CourierPartnerEnum = z.enum(["URBANE_BOLT", "MOCK_COURIER"], {
+  errorMap: () => ({
+    message: "Courier Partner must be 'URBANE_BOLT' or 'MOCK_COURIER'",
+  }),
 });
 
 export const PayModeEnum = z.enum(["COD", "PREPAID"], {

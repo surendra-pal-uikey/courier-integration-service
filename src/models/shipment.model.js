@@ -17,7 +17,7 @@ export const Shipment = sequelize.define(
       unique: true,
     },
     courierPartnerUsed: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM(["URBANE_BOLT", "MOCK_COURIER"]),
       allowNull: false,
       unique: false,
     },

@@ -21,6 +21,18 @@ class ShipmentService {
   constructor() {}
 
   async createShipment(courierPartner, orderId, customerCode) {
+    const shipment = await Shipment.findOne({
+      where: {
+        orderId: orderId,
+      },
+    });
+
+    if (shipment) {
+      return {
+        message: "Order number is already processed: " + orderId,
+      };
+    }
+
     const provider = providerFactory.getProvider(courierPartner);
 
     const originAddress = getOriginAddress();
@@ -67,7 +79,7 @@ class ShipmentService {
           courierShipmentId: shipmentResponse.courierShipmentId,
           awbNumber: shipment.awbNumber,
           status: shipment.currentShipmentStatus || "CREATED",
-          createdAt: shipment.createdAt,
+          createdAt: shipment.createdAt.toString(),
         });
       } else {
         return {
@@ -96,6 +108,7 @@ class ShipmentService {
     const shipment = await Shipment.findOne({
       where: {
         orderId: orderId,
+        courierPartnerUsed: courierPartner,
       },
     });
 
@@ -119,7 +132,7 @@ class ShipmentService {
 
       return TrackShipmentResponseDTO.parse({
         orderId: orderId,
-        awbNumber: result.awbNumber,
+        awbNumber: result.awbNumber.toString(),
         status: currentStatus,
         updateAt: result.currentStatusDateTime,
       });
@@ -145,6 +158,7 @@ class ShipmentService {
     const shipment = await Shipment.findOne({
       where: {
         orderId: orderId,
+        courierPartnerUsed: courierPartner,
       },
     });
 
