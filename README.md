@@ -43,18 +43,24 @@ npm install
 
 ### 4. Set Up the Environment Variables
 
-Create a `.env` file in the root directory and configure the required environment variables. For example:
+Create a `.env` file in the root directory and configure the required environment variables as given in the .env.example.
 
-```env
-PORT=3000
-```
+### 4. Tools or software needed to run the application
+VSCode, Docker, Node(22.20.0), Postman for testing the application.
 
 ### 5. Start the Application
 
-Run the application using:
+We have dockerized the entire application. We have to run this command to run the application:
 
+In the Docker setup, we have these services on the same network:
+
+1. Node application
+2. MongoDB
+3. MYSQL DB
+4. REDIS
+   
 ```bash
-npm run start
+docker compose up -d
 ```
 
 The application will start on `http://localhost:3000`.
@@ -114,7 +120,6 @@ curl --location 'http://localhost:3000/api/v1/orders/bulk' \
 Challenges:
 
 1. To call urbanebolt api, we need to have the access token in the request header. To avoid repeatedly fetching the access token from the urbanbolt api, we are implementing Redis so that we can store the access token inside it and we can make use of the token while making requests; for that, we will keep all the logic inside the request interceptor.
-
 2. Bulk processing request: we have used the p-limit package to process the 10 requests in parallel.
 3. Race condition for authentication in case of bulk requests: we will make use of the async-mutex lib.
 
