@@ -14,7 +14,10 @@ const shipmentStatusLogSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: [...Object.values(ShipmentStatus)],
+      enum: {
+        values: Object.keys(ShipmentStatus),
+        message: "{VALUE} is not a valid shipment status",
+      },
     },
   },
   {
@@ -23,33 +26,33 @@ const shipmentStatusLogSchema = new mongoose.Schema(
   }
 );
 
-// GUARD RAIL: Intercept and block any update queries at the software level
-const blockMutations = function (next) {
-  const error = new Error(
+// Guard rail function for update/delete queries
+const blockMutations = function () {
+  throw new Error(
     "Write Operational Error: This collection is strictly append-only."
   );
-  next(error);
 };
 
-shipmentStatusLogSchema.pre(
-  ["updateOne", "updateMany", "findOneAndUpdate", "replaceOne"],
-  blockMutations
-);
-shipmentStatusLogSchema.pre(
-  ["deleteOne", "deleteMany", "findOneAndDelete"],
-  blockMutations
-);
+// Explicitly register each query mutation hook to prevent parameter mismatches
+[
+  "updateOne",
+  "updateMany",
+  "findOneAndUpdate",
+  "replaceOne",
+  "deleteOne",
+  "deleteMany",
+  "findOneAndDelete",
+].forEach((method) => {
+  shipmentStatusLogSchema.pre(method, blockMutations);
+});
 
-// Prevent editing an existing document instance if someone calls log.status = 'X'; log.save();
-shipmentStatusLogSchema.pre("save", function (next) {
+// Fixed save middleware
+shipmentStatusLogSchema.pre("save", function () {
   if (!this.isNew) {
-    return next(
-      new Error(
-        "Write Operational Error: Cannot update existing immutable documents."
-      )
+    throw new Error(
+      "Write Operational Error: Cannot update existing immutable documents."
     );
   }
-  next();
 });
 
 export const ShipmentStatusLog = mongoose.model(

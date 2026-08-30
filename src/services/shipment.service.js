@@ -84,10 +84,10 @@ class ShipmentService {
     try {
       const result = await provider.trackShipment(awbNumber);
       await shipment.update({
-        currentShipmentStatus: result.currentShipmentStatus,
+        currentShipmentStatus: result.currentStatusCodeDescription,
       });
 
-      await logOrderStatus(orderId, result.currentShipmentStatus);
+      await logOrderStatus(orderId, result.currentStatusCodeDescription);
 
       return result;
     } catch (error) {

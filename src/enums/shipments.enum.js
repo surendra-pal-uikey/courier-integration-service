@@ -19,7 +19,7 @@ export const AddressTypeEnum = z.enum(
 );
 
 export const ShipmentStatus = Object.freeze({
-  CREATED: "Created",
+  CREATED: "Shipment Manifested",
   PICKED_UP: "Picked up",
   IN_TRANSIT: "In Transit",
   DELIVERED: "Delivered",
