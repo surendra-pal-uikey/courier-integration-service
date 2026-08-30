@@ -3,13 +3,9 @@ import { ShipmentStatusLog } from "../models/shipment-status.model.js";
 
 export async function logOrderStatus(orderId, currentStatus) {
   try {
-    const key = Object.keys(ShipmentStatus).find(
-      (key) => ShipmentStatus[key] === currentStatus
-    );
-
     const newLogEntry = new ShipmentStatusLog({
       metadata: { orderId: orderId },
-      status: key,
+      status: currentStatus,
     });
 
     await newLogEntry.save();

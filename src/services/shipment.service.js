@@ -13,6 +13,7 @@ import {
 import { ShipmentStatus } from "../enums/shipments.enum.js";
 import { logOrderStatus } from "./shipment-status-log.service.js";
 import { isUniqueShipmentOrder } from "../utils/idempotency.js";
+import { TrackShipmentResponseDTO } from "../dtos/consignment-dto.js";
 class ShipmentService {
   constructor() {}
 
@@ -87,9 +88,18 @@ class ShipmentService {
         currentShipmentStatus: result.currentStatusCodeDescription,
       });
 
-      await logOrderStatus(orderId, result.currentStatusCodeDescription);
+      const currentStatus = Object.keys(ShipmentStatus).find(
+        (key) => ShipmentStatus[key] === result.currentStatusCodeDescription
+      );
 
-      return result;
+      await logOrderStatus(orderId, currentStatus);
+
+      return TrackShipmentResponseDTO.parse({
+        orderId: orderId,
+        awbNumber: result.awbNumber,
+        status: currentStatus,
+        updateAt: result.currentStatusDateTime,
+      });
     } catch (error) {
       const errorDetails = {
         orderId,
@@ -127,7 +137,7 @@ class ShipmentService {
         currentShipmentStatus: ShipmentStatus.CANCELLED,
       });
 
-      await logOrderStatus(orderId, ShipmentStatus.CANCELLED);
+      await logOrderStatus(orderId, Object.keys(ShipmentStatus)[4]);
       return result;
     } catch (error) {
       const errorDetails = {

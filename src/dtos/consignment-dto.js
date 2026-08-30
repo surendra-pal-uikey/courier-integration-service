@@ -122,3 +122,10 @@ export const CreateShipmentRequest = z.object({
   invoiceValue: z.number(),
   itemQuantity: z.number(),
 });
+
+export const TrackShipmentResponseDTO = z.object({
+  orderId: z.string(),
+  awbNumber: z.number(),
+  status: z.string(),
+  updateAt: z.string(),
+});

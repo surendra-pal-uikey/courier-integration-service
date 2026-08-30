@@ -73,11 +73,9 @@ class UrbanBoltProvider extends BaseProvider {
     };
   }
   async createShipment(shipmentData) {
-    console.log("request reached at provider implementation");
     const req = this.createRequestObj(shipmentData);
 
     const validatedReq = CreateShipmentRequest.parse(req);
-    console.log("validated req", validatedReq);
 
     try {
       const resp = await createManifest(validatedReq);
