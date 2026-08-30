@@ -11,6 +11,7 @@ import {
   getInvoiceDetails,
 } from "../utils/dummyData.js";
 import { ShipmentStatus } from "../enums/shipments.enum.js";
+import { logOrderStatus } from "./shipment-status-log.service.js";
 class ShipmentService {
   constructor() {}
 
@@ -84,6 +85,9 @@ class ShipmentService {
       await shipment.update({
         currentShipmentStatus: result.currentShipmentStatus,
       });
+
+      await logOrderStatus(orderId, result.currentShipmentStatus);
+
       return result;
     } catch (error) {
       const errorDetails = {
@@ -121,6 +125,8 @@ class ShipmentService {
       await shipment.update({
         currentShipmentStatus: ShipmentStatus.CANCELLED,
       });
+
+      await logOrderStatus(orderId, ShipmentStatus.CANCELLED);
       return result;
     } catch (error) {
       const errorDetails = {

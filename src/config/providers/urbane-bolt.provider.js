@@ -7,6 +7,7 @@ import {
 } from "../../api/index.js";
 import BaseProvider from "./base.provider.js";
 import { logActivity } from "../../services/tracking.service.js";
+import { logOrderStatus } from "../../services/shipment-status-log.service.js";
 
 class UrbanBoltProvider extends BaseProvider {
   constructor() {
@@ -83,6 +84,10 @@ class UrbanBoltProvider extends BaseProvider {
 
       // logging req and resp object inside the mongodb
       await logActivity(validatedReq.orderNumber, validatedReq, resp);
+      await logOrderStatus(
+        validatedReq.orderNumber,
+        resp.currentShipmentStatus
+      );
       return resp;
     } catch (error) {
       throw new CourierPartnerAPIError(
