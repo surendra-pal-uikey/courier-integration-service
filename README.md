@@ -111,15 +111,17 @@ curl --location 'http://localhost:3000/api/v1/orders/bulk' \
 
 Challenges:
 
-1. To call urbanebolt api, we need to have the access token in the request header. To avoid repeatedly fetching the access token from the urbanbolt api, we are implementing Redis so that we can store the access token inside it and we can make use of the token while making requests; for that, we will keep all the logic inside the request interceptor.
+1. To call urbanebolt api, we need to have the access token in the request header. To avoid repeatedly fetching the access token from the urbanbolt api, we are implementing Redis so that we can store the access token in it and make use of the token while making requests; for that, we will keep all the logic inside the request interceptor.
 2. Bulk processing request: we have used the p-limit package to process the 10 requests in parallel.
-3. Race condition for authentication in case of bulk requests: we will make use of the async-mutex lib.
+   The current setup is not working correctly due to the incorrect customerCode and orderNumber. I have implemented this simple solution using the p-limit package.    In the product, we can make use of the event-driven architecture for a better app experience; we have two options: RabbitMQ and Kafka. We will take the     bulk request and then assign the batch ID to that request, and then process it in the backend; all the requests are in the backend, and we can expose one special endpoint where the user just needs to provide the batch id and we will give back all the details about the bulk request in that particular request.
+   
+4. Race condition for authentication in case of bulk requests: we will make use of the async-mutex lib.
 
 Workflow:
 
 We are taking only the necessary data for the implementation, like order id, courier_partner, customer_code
 
-but most of the details we are generating dummy although we can expect in the request payload from the client but to keep things simple we need only these details for now and can generate all the info required for the urbolt api on the fly. like return details, seller details, customer details, and product details.
+but most of the details we are generating dummy although we can expect them in the request payload from the client; to keep things simple, we need only these details for now and can generate all the info required for the urbolt api on the fly. Like return details, seller details, customer details, and product details.
 
 Architecture Diagram:
 <img width="1775" height="788" alt="Screenshot 2026-08-29 at 11 01 16 PM" src="https://github.com/user-attachments/assets/2651cb3b-8ade-46fd-b834-9e4aa6d7b289" />
