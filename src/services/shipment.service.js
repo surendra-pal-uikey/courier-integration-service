@@ -180,7 +180,6 @@ class ShipmentService {
   }
 
   async bulkShipment(bulkShipmentData) {
-    const provider = providerFactory.getProvider(preferredCarrierCode);
     // to execute the shipment creation in parallel with a limit of 10 concurrent requests
     const limit = pLimit(10);
 
@@ -203,6 +202,10 @@ class ShipmentService {
               );
               return;
             }
+
+            const provider = providerFactory.getProvider(
+              shipmentData.courier_partner
+            );
 
             const result = await provider.createShipment({
               originAddress,
