@@ -24,8 +24,6 @@ class UrbanBoltProvider extends BaseProvider {
       orderDetails,
     } = shipmentData;
 
-    console.log("order details", orderDetails);
-
     return {
       customerCode: orderDetails.customerCode,
       orderNumber: orderDetails.orderId,
@@ -79,13 +77,17 @@ class UrbanBoltProvider extends BaseProvider {
 
     try {
       const resp = await createManifest(validatedReq);
+      console.log("response", resp);
 
       // logging req and resp object inside the mongodb
       await logActivity(validatedReq.orderNumber, validatedReq, resp);
-      await logOrderStatus(
-        validatedReq.orderNumber,
-        resp.currentShipmentStatus
-      );
+      if (resp.successResponse.length > 0) {
+        const currentStatus = Object.keys(ShipmentStatus).find(
+          (key) => ShipmentStatus[key] === result.currentStatusCodeDescription
+        );
+
+        await logOrderStatus(validatedReq.orderNumber, currentStatus);
+      }
       return resp;
     } catch (error) {
       throw new CourierPartnerAPIError(

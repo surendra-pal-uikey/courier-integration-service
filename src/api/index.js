@@ -54,14 +54,14 @@ export const createManifest = async (manifestData) => {
   try {
     const response = await courierClient.post(
       "/services/manifest/",
-      manifestData,
+      [manifestData],
       {
         headers: {
           "Content-Type": "application/json",
         },
       }
     );
-    return response.data.data;
+    return response.data;
   } catch (error) {
     console.error(
       "Error creating manifest:",

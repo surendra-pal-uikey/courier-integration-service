@@ -44,25 +44,36 @@ class ShipmentService {
         },
       });
 
-      // store the shipment details in the database
-      const shipment = await Shipment.create({
-        orderId: orderId,
-        courierPartnerUsed: courierPartner,
-        courierShipmentId: result.courierShipmentId,
-        awbNumber: result.awbNumber,
-        currentShipmentStatus: result.currentShipmentStatus || "CREATED",
-      });
+      if (result.successResponse.length > 0) {
+        const shipmentResponse = result.successResponse[0];
+        const currentStatus = Object.keys(ShipmentStatus).find(
+          (key) =>
+            ShipmentStatus[key] ===
+            shipmentResponse.currentStatusCodeDescription
+        );
 
-      const response = CreateShipmentResponseDTO.parse({
-        orderId: shipment.orderId,
-        courierPartnerUsed: shipment.courierPartnerUsed,
-        courierShipmentId: result.courierShipmentId,
-        awbNumber: result.awbNumber,
-        status: shipment.currentShipmentStatus || "CREATED",
-        createdAt: shipment.createdAt,
-      });
+        // store the shipment details in the database
+        const shipment = await Shipment.create({
+          orderId: orderId,
+          courierPartnerUsed: courierPartner,
+          courierShipmentId: shipmentResponse.courierShipmentId,
+          awbNumber: shipmentResponse.awbNumber,
+          currentShipmentStatus: currentStatus || "CREATED",
+        });
 
-      return response;
+        return CreateShipmentResponseDTO.parse({
+          orderId: shipment.orderId,
+          courierPartnerUsed: shipment.courierPartnerUsed,
+          courierShipmentId: shipmentResponse.courierShipmentId,
+          awbNumber: shipment.awbNumber,
+          status: shipment.currentShipmentStatus || "CREATED",
+          createdAt: shipment.createdAt,
+        });
+      } else {
+        return {
+          ...result.errorResponse[0],
+        };
+      }
     } catch (error) {
       const errorDetails = {
         orderId,
@@ -96,13 +107,13 @@ class ShipmentService {
 
     try {
       const result = await provider.trackShipment(awbNumber);
-      await shipment.update({
-        currentShipmentStatus: result.currentStatusCodeDescription,
-      });
-
       const currentStatus = Object.keys(ShipmentStatus).find(
         (key) => ShipmentStatus[key] === result.currentStatusCodeDescription
       );
+
+      await shipment.update({
+        currentShipmentStatus: currentStatus,
+      });
 
       await logOrderStatus(orderId, currentStatus);
 
@@ -145,11 +156,12 @@ class ShipmentService {
 
     try {
       const result = await provider.cancelShipment(awbNumber);
+      const status = Object.keys(ShipmentStatus)[4];
       await shipment.update({
-        currentShipmentStatus: ShipmentStatus.CANCELLED,
+        currentShipmentStatus: status,
       });
 
-      await logOrderStatus(orderId, Object.keys(ShipmentStatus)[4]);
+      await logOrderStatus(orderId, status);
       return result;
     } catch (error) {
       const errorDetails = {
