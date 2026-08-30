@@ -83,7 +83,7 @@ Response:
      courierShipmentId: '1',
      awbNumber: '200000001170',
      currentShipmentStatus: 'CANCELLED',
-     createdAt: 2026-08-30T06:21:32.000Z,
+     createdAt: 2026-08-30T06:21:32.000Z
    }
 }
 ```
@@ -162,7 +162,7 @@ Response:
         courierShipmentId: '1',
         awbNumber: '200000001170',
         currentShipmentStatus: 'CANCELLED',
-        createdAt: 2026-08-30T06:21:32.000Z,
+        createdAt: 2026-08-30T06:21:32.000Z
       }
    ]
 }
