@@ -78,12 +78,12 @@ Response:
 {
    "success": true,
    "data": {
-     orderId: 'UEBCUS00015',
-     courierPartnerUsed: 'URBANE_BOLT',
-     courierShipmentId: '1',
-     awbNumber: '200000001170',
-     currentShipmentStatus: 'CANCELLED',
-     createdAt: 2026-08-30T06:21:32.000Z
+     "orderId": 'UEBCUS00015',
+     "courierPartnerUsed": 'URBANE_BOLT',
+     "courierShipmentId": '1',
+     "awbNumber": '200000001170',
+     "currentShipmentStatus": 'CANCELLED',
+     "createdAt": 2026-08-30T06:21:32.000Z
    }
 }
 ```
@@ -157,12 +157,12 @@ Response:
    "success": true,
    "data": [
       {
-        orderId: 'UEBCUS00015',
-        courierPartnerUsed: 'URBANE_BOLT',
-        courierShipmentId: '1',
-        awbNumber: '200000001170',
-        currentShipmentStatus: 'CANCELLED',
-        createdAt: 2026-08-30T06:21:32.000Z
+        "orderId": 'UEBCUS00015',
+        "courierPartnerUsed": 'URBANE_BOLT',
+        "courierShipmentId": '1',
+        "awbNumber": '200000001170',
+        "currentShipmentStatus": 'CANCELLED',
+        "createdAt": 2026-08-30T06:21:32.000Z
       }
    ]
 }
