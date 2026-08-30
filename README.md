@@ -73,6 +73,21 @@ curl --location 'http://localhost:3000/api/v1/orders/' \
 }'
 ```
 
+Response:
+```json
+{
+   "success": true,
+   "data": {
+     orderId: 'UEBCUS00015',
+     courierPartnerUsed: 'URBANE_BOLT',
+     courierShipmentId: '1',
+     awbNumber: '200000001170',
+     currentShipmentStatus: 'CANCELLED',
+     createdAt: 2026-08-30T06:21:32.000Z,
+   }
+}
+```
+
 ### Request to Track the Shipment for the Order
 
 ```bash
@@ -81,6 +96,19 @@ curl --location --request GET 'http://localhost:3000/api/v1/orders/123/track' \
 --data '{
     "courier_partner": "URBANE_BOLT"
 }'
+```
+
+Response:
+```json
+{
+    "success": true,
+    "data": {
+        "orderId": "UEBCUS00015",
+        "awbNumber": 200000001170,
+        "status": "CANCELLED",
+        "updateAt": "03 May 2025, 15:47"
+    }
+}
 ```
 
 ### Request to Cancel the Shipment for the Order
@@ -93,6 +121,23 @@ curl --location 'http://localhost:3000/api/v1/orders/123/cancel' \
 }'
 ```
 
+```json
+{
+    "success": true,
+    "data": {
+        "status": "Success",
+        "message": "Cancellation Process",
+        "successResponse": [],
+        "failureResponse": [
+            {
+                "orderNumber": "UEBCUS00015",
+                "awb": "200000001170",
+                "message": "Shipment already cancelled!"
+            }
+        ]
+    }
+}
+```
 ### Request to Place Bulk Shipments for the Orders
 
 ```bash
@@ -106,7 +151,22 @@ curl --location 'http://localhost:3000/api/v1/orders/bulk' \
     }
 ]'
 ```
-
+Response:
+```json
+{
+   "success": true,
+   "data": [
+      {
+        orderId: 'UEBCUS00015',
+        courierPartnerUsed: 'URBANE_BOLT',
+        courierShipmentId: '1',
+        awbNumber: '200000001170',
+        currentShipmentStatus: 'CANCELLED',
+        createdAt: 2026-08-30T06:21:32.000Z,
+      }
+   ]
+}
+```
 ---
 
 Challenges:
