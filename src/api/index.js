@@ -2,36 +2,31 @@ import axios from "axios";
 import { Mutex } from "async-mutex";
 import { redisPublisher } from "../config/redis.js";
 
-const URBANE_BOLT_BASE_URL =
-  process.env.URBANE_URL || "https://uat.urbanebolt.in/api/v1";
+const CORIER_BASE_URL = process.env.COURER_BASE_URL;
 
-const urbaneBoltClient = axios.create({
-  baseURL: URBANE_BOLT_BASE_URL,
+const courierClient = axios.create({
+  baseURL: CORIER_BASE_URL,
 });
 
 const mutex = new Mutex();
 
 // Outbound Request Interceptor
-urbaneBoltClient.interceptors.request.use(async (config) => {
-  let token = await redisPublisher.get("tokens:urbane_bolt");
-
-  console.log("initial token", token);
+courierClient.interceptors.request.use(async (config) => {
+  let token = await redisPublisher.get(process.env.REDIS_ACCESS_KEY_FOR_TOKEN);
 
   const release = await mutex.acquire();
   try {
     if (!token) {
       // Token is missing or expired, fetch a new one
       const response = await axios.post(
-        `${URBANE_BOLT_BASE_URL}/auth/getToken/`,
+        `${CORIER_BASE_URL}/auth/getToken/`,
         {
-          username: process.env.URBANE_BOLT_USERNAME,
-          password: process.env.URBANE_PASSWORD,
+          username: process.env.CORIER_USERNAME,
+          password: process.env.COURIER_PASSWORD,
         },
         {
           headers: {
             "Content-Type": "application/json",
-            Cookie:
-              "csrftoken=SuZfjeJQJQNlDaNxRJgaMqylRWlqogsL; csrftoken=jMgIhiCS992MOB2mBgwf7tiF7pdezDG6; sessionid=pn4l30zoiqx9ybj9cjy7licfgko3wpen",
           },
         }
       );
@@ -39,7 +34,7 @@ urbaneBoltClient.interceptors.request.use(async (config) => {
       token = response.data.access_token;
       const expiresIn = response.data.expires_in;
 
-      await redisPublisher.set("tokens:urbane_bolt", token, {
+      await redisPublisher.set(process.env.REDIS_ACCESS_KEY_FOR_TOKEN, token, {
         EX: expiresIn,
       });
     }
@@ -101,8 +96,6 @@ export const cancelShipment = async (cancelData) => {
       {
         headers: {
           "Content-Type": "application/json",
-          Cookie:
-            "csrftoken=ryXzwTVfW5ClrjcU6lW2w22a9rCVeqUR; sessionid=21bjwngg0x9s90ujff1cq4dpls3ufc2t",
         },
       }
     );
