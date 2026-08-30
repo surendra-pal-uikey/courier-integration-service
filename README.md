@@ -191,6 +191,15 @@ Entities
    - createdAt: timestamp
 ---
 
+For testing purposes, I have added MOCK_COURIER as the courier provider
+You just need to pass the payload as 
+{
+    "courier_partner": "MOCK_COURIER"
+}
+If you want to make use of MOCK_COURIER, otherwise you need to make use of URBANE_BOLT or any other 3rd party provider.
+
+---
+
 Challenges:
 
 1. To call urbanebolt api, we need to have the access token in the request header. To avoid repeatedly fetching the access token from the urbanbolt api, we are implementing Redis so that we can store the access token in it and make use of the token while making requests; for that, we will keep all the logic inside the request interceptor.
