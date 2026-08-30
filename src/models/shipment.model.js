@@ -19,12 +19,12 @@ export const Shipment = sequelize.define(
     courierPartnerUsed: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: false,
     },
     courierShipmentId: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: false,
     },
     awbNumber: {
       type: DataTypes.STRING,
