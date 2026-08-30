@@ -167,6 +167,28 @@ Response:
    ]
 }
 ```
+
+---
+Entities
+1. Shipment(Or Order Shipment)
+   - id: primary key
+   - orderId: string
+   - courierPartnerUsed: string
+   - courierShipmentId: string <- returned by the courier partner
+   - awbNumber: string
+   - currentShipmentStatus: status(CREATED, PICKED_UP, IN_TRANSIT, DELIVERED, CANCELLED, FAILED)
+   - createAt: timestamp
+   - updatedAt: timestamp
+
+2. ShipmentStatusTracking
+   - createdAt: timestamp
+   - metadata: { orderId: string }
+   - status: status(CREATED, PICKED_UP, IN_TRANSIT, DELIVERED, CANCELLED, FAILED)
+3. TrackingEvent(for logging and auditing what ever the create menifest request made)
+   - order_id: string
+   - reqObj: JSON Object
+   - resObj: JSON Object
+   - createdAt: timestamp
 ---
 
 Challenges:
@@ -176,7 +198,8 @@ Challenges:
    The current setup is not working correctly due to the incorrect customerCode and orderNumber. I have implemented this simple solution using the p-limit package.    In the product, we can make use of the event-driven architecture for a better app experience; we have two options: RabbitMQ and Kafka. We will take the     bulk request and then assign the batch ID to that request, and then process it in the backend; all the requests are in the backend, and we can expose one special endpoint where the user just needs to provide the batch id and we will give back all the details about the bulk request in that particular request.
    
 4. Race condition for authentication in case of bulk requests: we will make use of the async-mutex lib.
-5. Design Patterns Used:
+5. For persisting the tracking status of the order shipment, we are using MongoDB, as we are not maintaining any strong relation and keeping our database flexible to store some more metadata(as of now only storing orderId).
+7. Design Patterns Used:
    - Strategy Pattern: To add multiple partner support in our system, we have created the BaseProvider; with the help of this, we can allow more concrete implementations based on the courier provider.
    - To supply the correct provider at runtime based on the courier provider, we are implementing a factory design pattern.
 
