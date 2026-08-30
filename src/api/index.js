@@ -13,6 +13,7 @@ const mutex = new Mutex();
 // Outbound Request Interceptor
 courierClient.interceptors.request.use(async (config) => {
   let token = await redisPublisher.get(process.env.REDIS_ACCESS_KEY_FOR_TOKEN);
+  console.log(token);
 
   const release = await mutex.acquire();
   try {
@@ -32,11 +33,16 @@ courierClient.interceptors.request.use(async (config) => {
       );
 
       token = response.data.access_token;
+      console.log("recieved token", token);
       const expiresIn = response.data.expires_in;
 
-      await redisPublisher.set(process.env.REDIS_ACCESS_KEY_FOR_TOKEN, token, {
-        EX: expiresIn,
-      });
+      await redisPublisher.set(
+        process.env.REDIS_ACCESS_KEY_FOR_TOKEN,
+        token,
+        "NX",
+        "EX",
+        expiresIn
+      );
     }
   } finally {
     release();
@@ -49,7 +55,7 @@ courierClient.interceptors.request.use(async (config) => {
 
 export const createManifest = async (manifestData) => {
   try {
-    const response = await urbaneBoltClient.post(
+    const response = await courierClient.post(
       "/services/manifest/",
       manifestData,
       {
@@ -69,8 +75,9 @@ export const createManifest = async (manifestData) => {
 };
 
 export const trackShipment = async (awb) => {
+  console.log("awb", awb);
   try {
-    const response = await urbaneBoltClient.get(
+    const response = await courierClient.get(
       `/services/tracking-pub/?awb=${awb}`,
       {
         headers: {
@@ -78,6 +85,7 @@ export const trackShipment = async (awb) => {
         },
       }
     );
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error(
@@ -90,15 +98,11 @@ export const trackShipment = async (awb) => {
 
 export const cancelShipment = async (cancelData) => {
   try {
-    const response = await urbaneBoltClient.post(
-      "/services/cancel/",
-      cancelData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await courierClient.post("/services/cancel/", cancelData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     return response.data;
   } catch (error) {
     console.error(

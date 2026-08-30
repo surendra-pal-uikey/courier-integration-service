@@ -41,7 +41,7 @@ class ShipmentService {
       });
 
       // store the shipment details in the database
-      await Shipment.create({
+      const shipment = await Shipment.create({
         orderId: orderId,
         courierPartnerUsed: courierPartner,
         courierShipmentId: result.courierShipmentId,
