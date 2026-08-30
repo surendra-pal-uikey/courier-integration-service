@@ -33,15 +33,7 @@ git clone git@github.com:surendra-pal-uikey/courier-integration-service.git
 cd courier-integration-service
 ```
 
-### 3. Install Dependencies
-
-Make sure you have `Node.js`(22.0.0) installed. Then, run:
-
-```bash
-npm install
-```
-
-### 4. Set Up the Environment Variables
+### 3. Set Up the Environment Variables
 
 Create a `.env` file in the root directory and configure the required environment variables as given in the .env.example.
 
